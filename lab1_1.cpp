@@ -32,19 +32,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	wc.lpszClassName = szClassName;
 	wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 
-	
 	if (!RegisterClassEx(&wc)) {
 		MessageBox(NULL, "Cannot register class", "Error", MB_OK);
 		return 0;
 	}
 
-
-	
 	hMainWnd = CreateWindow(
-		szClassName, "Circle", /*WS_OVERLAPPEDWINDOW*/WS_MAXIMIZE | WS_MINIMIZEBOX | WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU,
-		CW_USEDEFAULT, 0, /*CW_USEDEFAULT, 0,*/ winWidth, winHeigh,
-		(HWND)NULL, (HMENU)NULL,
-		(HINSTANCE)hInstance, NULL
+		szClassName, "Circle", WS_MAXIMIZE | WS_MINIMIZEBOX | WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU, CW_USEDEFAULT, 0, winWidth, winHeigh,
+		(HWND)NULL, (HMENU)NULL, (HINSTANCE)hInstance, NULL
 		);
 	if (!hMainWnd) {
 		MessageBox(NULL, "Cannot create main window", "Error", MB_OK);
@@ -66,7 +61,6 @@ void CircleDraw(HWND hWnd, HDC *hDC, PAINTSTRUCT *ps, RECT rect, HPEN hPen, HBRU
 	GetClientRect(hWnd, &rect);
 	SelectObject(*hDC, hPen);
 	SelectObject(*hDC, hBrush); //делаем кисть активной
-
 	//BOOL Ellipse(HDC hdc, int xLeft, int yTop, int xRight, int yBottom);
 	Ellipse(*hDC, figureXLeft, figureYTop, figureXRight, figureYBottom);
 	EndPaint(hWnd, ps);
@@ -129,7 +123,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		InvalidateRect(hWnd, 0, 1);
-		//CircleDraw(hWnd, &hDC, &ps, rect, hPen, hBrush, figureXLeft, figureYTop, figureXRight, figureYBottom);
+		break;
+	case WM_LBUTTONUP:
+		figureXLeft = LOWORD(lParam) - figureSizeDiv2;
+		figureXRight = LOWORD(lParam) + figureSizeDiv2;
+		figureYTop = HIWORD(lParam) - figureSizeDiv2;
+		figureYBottom = HIWORD(lParam) + figureSizeDiv2;
+		InvalidateRect(hWnd, 0, 1);
 		break;
 	case WM_MOUSEWHEEL:
 		wheelDelta = GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
